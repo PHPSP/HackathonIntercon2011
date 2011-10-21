@@ -59,3 +59,14 @@
     git=http://github.com/symfony/AsseticBundle.git
     target=/bundles/Symfony/Bundle/AsseticBundle
     version=v1.0.1
+
+[FOSTwitterBundle]
+    git=git://github.com/FriendsOfSymfony/FOSTwitterBundle.git
+    target=/bundles/FOS/TwitterBundle
+    
+[twitteroauth]
+    git=git://github.com/kertz/twitteroauth.git
+    target=/twitteroauth
+    
+    
+    
