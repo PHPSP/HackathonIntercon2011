@@ -17,6 +17,7 @@ $loader->registerNamespaces(array(
     
     //Other External
     'FOS'              => __DIR__.'/../vendor/bundles',
+    'DMS'              => __DIR__.'/../src',
 
 ));
 $loader->registerPrefixes(array(
