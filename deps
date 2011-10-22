@@ -61,7 +61,7 @@
     version=v1.0.1
 
 [FOSTwitterBundle]
-    git=git://github.com/FriendsOfSymfony/FOSTwitterBundle.git
+    git=https://github.com/rdohms/FOSTwitterBundle.git
     target=/bundles/FOS/TwitterBundle
     
 [twitteroauth]

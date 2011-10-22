@@ -31,49 +31,49 @@ class User
     /**
      * @var string $screenName
      *
-     * @ORM\Column(name="screenName", type="string", length=255)
+     * @ORM\Column(name="screenName", type="string", length=255, nullable=true)
      */
     private $screenName;
 
     /**
      * @var text $accessToken
      *
-     * @ORM\Column(name="accessToken", type="text")
+     * @ORM\Column(name="accessToken", type="text", nullable=true)
      */
     private $accessToken;
 
     /**
      * @var string $lomadeeId
      *
-     * @ORM\Column(name="lomadeeId", type="string", length=100)
+     * @ORM\Column(name="lomadeeId", type="string", length=100, nullable=true)
      */
     private $lomadeeId;
 
     /**
      * @var integer $frequency
      *
-     * @ORM\Column(name="frequency", type="integer")
+     * @ORM\Column(name="frequency", type="integer", nullable=true)
      */
     private $frequency;
 
     /**
      * @var DateTime $lastRun
      *
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $lastRun;
 
     /**
      * @var string $fallback
      *
-     * @ORM\Column(name="fallback", type="string", length=150)
+     * @ORM\Column(name="fallback", type="string", length=150, nullable=true)
      */
     private $fallback;
 
     /**
      * @var string $hashtag
      *
-     * @ORM\Column(name="hashtag", type="string", length=100)
+     * @ORM\Column(name="hashtag", type="string", length=100, nullable=true)
      */
     private $hashtag;
 

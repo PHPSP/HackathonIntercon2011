@@ -1,0 +1,49 @@
+<h1>User list</h1>
+
+<table class="records_list">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Twitterid</th>
+            <th>Screenname</th>
+            <th>Accesstoken</th>
+            <th>Lomadeeid</th>
+            <th>Frequency</th>
+            <th>Fallback</th>
+            <th>Hashtag</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for entity in entities %}
+        <tr>
+            <td><a href="{{ path('user_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
+            <td>{{ entity.twitterId }}</td>
+            <td>{{ entity.screenName }}</td>
+            <td>{{ entity.accessToken }}</td>
+            <td>{{ entity.lomadeeId }}</td>
+            <td>{{ entity.frequency }}</td>
+            <td>{{ entity.fallback }}</td>
+            <td>{{ entity.hashtag }}</td>
+            <td>
+                <ul>
+                    <li>
+                        <a href="{{ path('user_show', { 'id': entity.id }) }}">show</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('user_edit', { 'id': entity.id }) }}">edit</a>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<ul>
+    <li>
+        <a href="{{ path('user_new') }}">
+            Create a new entry
+        </a>
+    </li>
+</ul>

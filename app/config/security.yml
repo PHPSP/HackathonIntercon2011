@@ -12,23 +12,17 @@ security:
             id: fos_twitter.auth
 
     firewalls:
-        
-        public:
-            pattern:   /.*
+        dev:
+            pattern:  ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        secured:
+            pattern:    ^/
             anonymous: true
             fos_twitter: true
-            logout: true
-            
-        secured:
-            pattern:   /login_check
-            fos_twitter: true
-
-        # login:
-        #     pattern:   /login/.*
-        #     anonymous: true
-        #     fos_twitter: true
-        #     logout: true
-
+            logout: ~
+            provider: fos_twitter
 
     access_control:
-        - { path: /.*, role: [IS_AUTHENTICATED_ANONYMOUSLY] }
+        - { path: ^/$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        # - { path: ^/user, roles: IS_AUTHENTICATED_FULLY }
+        # - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

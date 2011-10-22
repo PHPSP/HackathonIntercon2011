@@ -10,11 +10,11 @@
     <div class="topbar">
       <div class="fill">
         <div class="container">
-          <a class="brand" href="#">Hackathon</a>
+          <a class="brand" href="#">LomaTweet</a>
           
           <ul class="nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="#about">About</a></li>
+            <li class="active"><a href="/">Sobre</a></li>
+            <li><a href="/user/settings">Configuração</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
         </div>
@@ -24,6 +24,14 @@
     <div class="container">
 
       <div class="content">
+		{% block nav %}
+		<div class="row">
+			<div class="span16">
+				<a href="/user/stats">Sua Conta</a> >> {% block current_page %} {% endblock %}
+			</div>
+		</div>
+		{% endblock %}
+
         {% block content %}{% endblock %}
       </div>
 
