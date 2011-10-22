@@ -30,4 +30,37 @@ class LomaTweeWorkerService
         $this->twitter   = $twitter;
         $this->container = $container;
     }
+    
+    /**
+     * Retrieve an Interatable ResultSet of subscribed Users.
+     * 
+     * @return Doctrine\ORM\Internal\Hydration\IteratableResult
+     */
+    public function getUsers()
+    {
+        $em      = $this->container->get('doctrine')->getEntityManager();
+        $builder = $em->getRepository('AppWebBundle:User')->createQueryBuilder('u');
+        
+        $builder->where('(u.lastRun + u.frequency) < NOW()');
+        
+        return $builder->getQuery()->iterate();
+    }
+    
+    /**
+     * Retrieve subscribed User based on it screen name.
+     * 
+     * @param string $screenName
+     * 
+     * @return Doctrine\Common\Collections\ArrayCollection 
+     */
+    public function getUser($screenName)
+    {
+        $em      = $this->container->get('doctrine')->getEntityManager();
+        $builder = $em->getRepository('AppWebBundle:User')->createQueryBuilder('u');
+        
+        $builder->where('u.screenName = ?0')
+                ->setParameter(0, $screenName);
+        
+        return $builder->getQuery()->getResult();
+    }
 }
