@@ -6,6 +6,7 @@ namespace App\Bundle\WebBundle\Services\Lomadee;
 
 use Symfony\Component\DependencyInjection\Container;
 use \UnexpectedValueException;
+
 $categories = <<<XML
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Result xmlns="urn:buscape" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" totalResultsReturned="74" totalResultsAvailable="74" xsi:schemaLocation="http://developer.buscape.com/admin/buscape.xsd">
@@ -613,7 +614,151 @@ $categories = <<<XML
 XML;
 
 
-$products = <<<XML
+/**
+ * API Service for Lomadee.
+ */
+class ApiService
+{   
+    /**
+     * @var Symfony\Component\DependencyInjection\Container
+     */
+    private $container;
+    /**
+     * Lomadee APP ID
+     * @var string
+     */
+    private $app_id;
+    /**
+     * User source ID
+     * @var string
+     */
+    private $source_id;
+    
+    /**
+     * @var App\Bundle\WebBundle\Services\Lomadee\Wrapper
+     */
+    private $client;
+    
+    /**
+     * Constructor.
+     * 
+     * @param Symfony\Component\DependencyInjection\Container   $container
+     * @param string                                            $appId
+     * @param boolean[optional]                                  $sandbox
+     */
+    public function __construct(Container $container, $appId, $sandbox = false)
+    {
+        $sandbox         = (boolean) $sandbox;
+        $this->container = $container;
+        $this->app_id    = $appId;
+        
+        if ($sandbox) {
+            $this->getClient()->setSandbox();
+        }
+    }
+    
+    /**
+     * Returns the Lomadee APP ID.
+     *
+     * @throws  UnexpectedValueException
+     * @return  string
+     */
+    public function getAppId()
+    {
+        if (empty($this->app_id)) {
+            $msg = 'No APP_ID defined for Lomadee service. Dumbass.';
+            throw new UnexpectedValueException($msg);
+        }
+        return $this->app_id;
+    }
+    
+    /**
+     * Defines the source id to consume the service.
+     *
+     * @param string $id 
+     */
+    public function setSourceId($id)
+    {
+        $this->source_id = $id;
+    }
+    
+    /**
+     * Returns the source id for lomadee service.
+     *
+     * @return string
+     */
+    public function getSourceId()
+    {
+        if (empty($this->source_id)) {
+            $msg = 'Source ID for Lomadee not set! Dumbass!';
+            throw new UnexpectedValueException($msg);
+        }
+        return $this->source_id;
+    }
+    
+    /**
+     * Returns if there is source id to be used.
+     *
+     * @return boolean
+     */
+    public function hasSourceId()
+    {
+        return (!empty($this->source_id));
+    }
+    
+    /**
+     * Returns the Client Wrapper API.
+     *
+     * @return App\Bundle\WebBundle\Services\Lomadee\Wrapper
+     */
+    public function getClient()
+    {
+        if ( ! $this->client instanceof Wrapper) {
+            $this->client = new Wrapper($this->getAppId());
+        }
+        
+        return $this->client;
+    }
+    
+    public function getCategoryList(array $args = array())
+    {
+        global $categories;
+
+        if ($this->hasSourceId()) {
+            //$this->client->setSourceId($this->getSourceId());
+        }
+        
+        //$result = $this->client->findCategoryList($args);
+        $result = $categories;
+        $return = array();
+        
+        if (!$result) {
+            return null;
+        }
+        
+        $xml    = new \SimpleXMLElement($result);
+        $nodes  = array('subCategory');
+        
+        foreach ($xml as $name=>$element) {
+            if (!in_array($name, $nodes)) { continue; }
+            
+            $cat            = new Category();
+            $cat->id        = $element['id'];
+            $cat->name      = (string) $element->name;
+            $cat->parentId  = (string) $element['parentCategoryId'];
+            $cat->thumbnail = (string) $element->thumbnail['url'];
+            $cat->hasOffers = (boolean) $element['hasOffers'];
+            $cat->parentId  = (string) $element['parentCategoryId'];
+            $cat->isFinal   = (string) $element['isFinal'];
+            
+            $return[] = $cat;
+        }
+        return $return;
+    }
+    
+    public function searchProducts($keyword)
+    {
+		$products = <<< XML
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Result xmlns="urn:buscape" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" match="all" page="1" totalPages="88" totalResultsReturned="16" totalResultsAvailable="1405" xsi:schemaLocation="http://developer.buscape.com/admin/buscape.xsd">
     <details>
@@ -1460,153 +1605,22 @@ $products = <<<XML
     </product>
 </Result>
 XML;
-/**
- * API Service for Lomadee.
- */
-class ApiService
-{   
-    /**
-     * @var Symfony\Component\DependencyInjection\Container
-     */
-    private $container;
-    /**
-     * Lomadee APP ID
-     * @var string
-     */
-    private $app_id;
-    /**
-     * User source ID
-     * @var string
-     */
-    private $source_id;
-    
-    /**
-     * @var App\Bundle\WebBundle\Services\Lomadee\Wrapper
-     */
-    private $client;
-    
-    /**
-     * Constructor.
-     * 
-     * @param Symfony\Component\DependencyInjection\Container   $container
-     * @param string                                            $appId
-     * @param string[optional]                                  $sourceId
-     */
-    public function __construct(Container $container, $appId, $sandbox = false)
-    {
-        $sandbox         = (boolean) $sandbox;
-        $this->container = $container;
-        $this->app_id    = '5a2f6f786f61782b62314d3d'; //$appId;
-        if ($sandbox) {
-            echo 'sandbox';
-            $this->getClient()->setSandbox();
-        }
-    }
-    
-    /**
-     * Returns the Lomadee APP ID.
-     *
-     * @throws  UnexpectedValueException
-     * @return  string
-     */
-    public function getAppId()
-    {
-        if (empty($this->app_id)) {
-            $msg = 'No APP_ID defined for Lomadee service. Dumbass.';
-            throw new UnexpectedValueException($msg);
-        }
-        return $this->app_id;
-    }
-    
-    /**
-     * Defines the source id to consume the service.
-     *
-     * @param string $id 
-     */
-    public function setSourceId($id)
-    {
-        $this->source_id = $id;
-    }
-    
-    /**
-     * Returns the source id for lomadee service.
-     *
-     * @return string
-     */
-    public function getSourceId()
-    {
-        if (empty($this->source_id)) {
-            $msg = 'Source ID for Lomadee not set! Dumbass!';
-            throw new UnexpectedValueException($msg);
-        }
-        return $this->source_id;
-    }
-    
-    /**
-     * Returns if there is source id to be used.
-     *
-     * @return boolean
-     */
-    public function hasSourceId()
-    {
-        return (!empty($this->source_id));
-    }
-    
-    /**
-     * Returns the Client Wrapper API.
-     *
-     * @return App\Bundle\WebBundle\Services\Lomadee\Wrapper
-     */
-    public function getClient()
-    {
-        return '';
-        if (!$this->client instanceof Wrapper) {
-            $this->client = new Wrapper($this->getAppId());
-        }
-        return $this->client;
-    }
-    
-    public function getCategoryList(array $args = array())
-    {
-        if ($this->hasSourceId()) {
-            //$this->client->setSourceId($this->getSourceId());
-        }
-        //$result = $this->client->findCategoryList($args);
-        $result = $categories;
-        $return = array();
-        if (!$result) {
-            return null;
-        }
-        $xml    = new \SimpleXMLElement($result);
-        $nodes  = array('subCategory');
-        foreach ($xml as $name=>$element) {
-            if (!in_array($name, $nodes)) { continue; }
-            $cat            = new Category();
-            $cat->id        = $element['id'];
-            $cat->name      = (string) $element->name;
-            $cat->parentId  = (string) $element['parentCategoryId'];
-            $cat->thumbnail = (string) $element->thumbnail['url'];
-            $cat->hasOffers = (boolean) $element['hasOffers'];
-            $cat->parentId  = (string) $element['parentCategoryId'];
-            $cat->isFinal   = (string) $element['isFinal'];
-            $return[] = $cat;
-        }
-        return $return;
-    }
-    
-    public function searchProducts($keyword)
-    {
-        $args     = array('keyword'=>$keyword);
+        
+        $args     = array('keyword' => $keyword);
         //$response = $this->getClient()->findProductList($args);
         $response = $products;
         $nodes    = array('product');
         $return   = array();
-        if (!$response) {
+        
+        if ( ! $response) {
             return null;
         }
-        $xml      = new \SimpleXMLElement($response);
+        
+        $xml = new \SimpleXMLElement($response);
+        
         foreach ($xml as $name=>$item) {
             if (!in_array($name, $nodes)) { continue; }
+            
             $prod             = new Product();
             $prod->id         = (string) $item['id'];
             $prod->categoryId = (string) $item['categoryId'];
@@ -1615,12 +1629,19 @@ class ApiService
             $prod->minPrice   = (string) $item->priceMin;
             $prod->name       = (string) $item->productName;
             $prod->totalSellers = (string) $item['totalSellers'];
-            foreach ($item->links as $link) {
-                $type = (string) $link['type'];
-                if ($type != 'product') { continue; }
-                $prod->link = (string) $link['url'];
-                break;
+            
+            foreach ($item->links as $links) {
+				foreach ($links as $link) {
+					$type = (string) $link['type'];
+					
+					if ($type != 'product') { continue; }
+					
+					$prod->link = (string) $link['url'];
+					
+					break 2;
+				}
             }
+            
             $return[] = $prod;
         }
         return $return;

@@ -53,7 +53,13 @@ class LomaTweeWorkerCommand extends ContainerAwareCommand
         $this->output->writeln('OK!');
         
         foreach ($userCollection as $user) {
-            $this->processUserNotification($user);
+            $tweetMessage = $this->processUserNotification($user);
+            
+            if ( ! $tweetMessage) continue;
+            
+            $this->output->writeln(
+                sprintf('Sending as user "<info>%s</info>": %s', $user->getScreenName(), $tweetMessage)
+            );
         }
         
         $this->output->writeln('Notifications send.');
@@ -88,7 +94,7 @@ class LomaTweeWorkerCommand extends ContainerAwareCommand
     private function processUserNotification(User $user)
     {
         if ( ! $this->isScheduledForProcessment($user)) {
-            return false;
+            return null;
         }
         
         $container       = $this->getContainer();
@@ -98,7 +104,9 @@ class LomaTweeWorkerCommand extends ContainerAwareCommand
         $keywords = $lomaTweeService->getUserTimelineKeywords($user);
         $products = $lomadeeService->searchProducts(implode(',', $keywords));
         
-        return true;
+        $selectedProduct = $products[rand(0, count($products) - 1)];
+        
+        return $this->buildTweetMessage($selectedProduct);
     }
     
     /**
@@ -115,5 +123,26 @@ class LomaTweeWorkerCommand extends ContainerAwareCommand
         $frequency = $user->getFrequency();
         
         return ($lastRun->format('U') + $frequency < $now->format('U'));
+    }
+    
+    /**
+     * Retrieve the tweet message of a product.
+     * 
+     * @param stdClass $product
+     * 
+     * @return string 
+     */
+    private function buildTweetMessage($product)
+    {
+        //$productLink = $product->link;
+        
+        // Mock URL shortener
+        $productLink = 'http://t.co/';
+        
+        for ($i = 0; $i <= 5; $i++) {
+             $productLink .= chr(rand(97, 122));
+        }
+    
+        return $product->name . ', por R$' . $product->minPrice . ' - ' . $productLink . ' #ad';
     }
 }
