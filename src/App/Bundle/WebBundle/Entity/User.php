@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * App\Bundle\WebBundle\Entity\User
  *
- * @ORM\Table()
+ * @ORM\Table(name="users")
  * @ORM\Entity(repositoryClass="App\Bundle\WebBundle\Entity\UserRepository")
  */
 class User
@@ -186,6 +186,26 @@ class User
     public function getFrequency()
     {
         return $this->frequency;
+    }
+
+    /**
+     * Set lastRun
+     *
+     * @param string $lastRun
+     */
+    public function setLastRun($lastRun)
+    {
+        $this->lastRun = $lastRun;
+    }
+
+    /**
+     * Get lastRun
+     *
+     * @return DateTime 
+     */
+    public function getLastRun()
+    {
+        return $this->lastRun;
     }
 
     /**
