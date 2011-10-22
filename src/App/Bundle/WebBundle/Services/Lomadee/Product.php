@@ -21,4 +21,5 @@ class Product
     public $maxPrice;
     public $currency;
     public $totalSellers;
+    public $link;
 }

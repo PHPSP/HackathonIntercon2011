@@ -1568,7 +1568,7 @@ class ApiService
     
     public function getCategoryList(array $args = array())
     {
-        if ($this->hasSourceId())
+        if ($this->hasSourceId()) {
             //$this->client->setSourceId($this->getSourceId());
         }
         //$result = $this->client->findCategoryList($args);
@@ -1615,8 +1615,16 @@ class ApiService
             $prod->minPrice   = (string) $item->priceMin;
             $prod->name       = (string) $item->productName;
             $prod->totalSellers = (string) $item['totalSellers'];
+            foreach ($item->links as $link) {
+                $type = (string) $link['type'];
+                if ($type != 'product') { continue; }
+                $prod->link = (string) $link['url'];
+                break;
+            }
             $return[] = $prod;
         }
         return $return;
     }
+    
+    
 }
