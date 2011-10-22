@@ -3,7 +3,8 @@
 namespace App\Bundle\WebBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand,
-    Symfony\Component\Console;
+    Symfony\Component\Console,
+    App\Bundle\WebBundle\Entity\User;
 
 /**
  * LomaTweeWorkerCommand class
@@ -11,6 +12,16 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand,
  */
 class LomaTweeWorkerCommand extends ContainerAwareCommand
 {
+    /**
+     * @var Symfony\Component\Console\Input\InputInterface 
+     */
+    private $input;
+    
+    /**
+     * @var Symfony\Component\Console\Output\OutputInterface 
+     */
+    private $output;
+    
     /**
      * Configure Command
      */
@@ -29,20 +40,23 @@ class LomaTweeWorkerCommand extends ContainerAwareCommand
      */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
+        $this->input  = $input;
+        $this->output = $output;
+        
         $container  = $this->getContainer();
         
-        $output->write('Fetching for users to be notified... ');
+        $this->output->write('Fetching for users to be notified... ');
         
         $screenName     = $input->getArgument('user');
         $userCollection = $this->getUserCollection($screenName);
         
-        $output->writeln('OK!');
+        $this->output->writeln('OK!');
         
         foreach ($userCollection as $user) {
-            $output->writeln(\Doctrine\Common\Util\Debug::export($user, 3));
+            $this->processUserNotification($user);
         }
         
-        $output->writeln('Notifications send.');
+        $this->output->writeln('Notifications send.');
     }
     
     /**
@@ -62,5 +76,44 @@ class LomaTweeWorkerCommand extends ContainerAwareCommand
         }
         
         return $lomaTweeService->getUsers();
+    }
+    
+    /**
+     * Process User notification
+     * 
+     * @param App\Bundle\WebBundle\Entity\User $user
+     * 
+     * @return boolean 
+     */
+    private function processUserNotification(User $user)
+    {
+        if ( ! $this->isScheduledForProcessment($user)) {
+            return false;
+        }
+        
+        $container       = $this->getContainer();
+        $lomaTweeService = $container->get('lomatwee.worker');
+        $lomadeeService  = $container->get('lomadee.api');
+        
+        $keywords = $lomaTweeService->getUserTimelineKeywords($user);
+        $products = $lomadeeService->searchProducts(implode(',', $keywords));
+        
+        return true;
+    }
+    
+    /**
+     * Check if User is scheduled to be processed.
+     *
+     * @param App\Bundle\WebBundle\Entity\User $user
+     * 
+     * @return boolean 
+     */
+    private function isScheduledForProcessment(User $user)
+    {
+        $now       = new \DateTime('now');
+        $lastRun   = $user->getLastRun();
+        $frequency = $user->getFrequency();
+        
+        return ($lastRun->format('U') + $frequency < $now->format('U'));
     }
 }

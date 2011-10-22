@@ -189,6 +189,26 @@ class User
     }
 
     /**
+     * Set lastRun
+     *
+     * @param string $lastRun
+     */
+    public function setLastRun($lastRun)
+    {
+        $this->lastRun = $lastRun;
+    }
+
+    /**
+     * Get lastRun
+     *
+     * @return DateTime 
+     */
+    public function getLastRun()
+    {
+        return $this->lastRun;
+    }
+
+    /**
      * Set fallback
      *
      * @param string $fallback
