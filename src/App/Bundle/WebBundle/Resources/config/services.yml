@@ -1,0 +1,6 @@
+services:
+  lomatwee.worker:
+    class: App\Bundle\WebBundle\Services\LomaTweeWorkerService
+    arguments:
+      twitter: @fos_twitter.api
+      container: @service_container
