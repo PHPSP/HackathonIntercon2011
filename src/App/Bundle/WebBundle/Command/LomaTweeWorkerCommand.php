@@ -2,13 +2,14 @@
 
 namespace App\Bundle\WebBundle\Command;
 
-use Symfony\Component\Console;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand,
+    Symfony\Component\Console;
 
 /**
  * LomaTweeWorkerCommand class
  * 
  */
-class LomaTweeWorkerCommand extends Console\Command\Command
+class LomaTweeWorkerCommand extends ContainerAwareCommand
 {
     /**
      * Configure Command
@@ -28,6 +29,8 @@ class LomaTweeWorkerCommand extends Console\Command\Command
      */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
+        $container = $this->getContainer();
+        
         $output->writeln('It works!');
     }
 }
