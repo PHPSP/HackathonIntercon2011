@@ -4,3 +4,10 @@ services:
     arguments:
       twitter: @fos_twitter.api
       container: @service_container
+      
+  lomadee.api:
+      class: App\Bundle\WebBundle\Services\Lomadee\ApiService
+      arguments:
+          container: @service_container
+          appid: $lomadee_app_id
+          development: $lomadee_use_sandbox
