@@ -1,0 +1,36 @@
+{% extends '::base.html.twig' %}
+
+{% block stylesheets %}
+{{parent()}}
+<link rel="stylesheet" href="/bundles/appweb/css/app.css" type="text/css" media="screen" title="no title" charset="utf-8">
+{% endblock %}
+
+{% block body %}
+
+    <div class="topbar">
+      <div class="fill">
+        <div class="container">
+          <a class="brand" href="#">Hackathon</a>
+          
+          <ul class="nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="content">
+        {% block content %}{% endblock %}
+      </div>
+
+      <footer>
+        <p>&copy; PHPSP</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+{% endblock %}
